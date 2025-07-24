@@ -6,7 +6,7 @@ import 'package:app_ia/domain/entity/message.dart';
 import 'package:app_ia/domain/repository/ai_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:dartz/dartz.dart';
-import 'package:uuid/uuid.dart'; // Para generar IDs para el mensaje de la IA
+import 'package:uuid/uuid.dart';
 
 /// Concrete implementation of [AiRepository] from the Domain Layer.
 /// This is part of the Data Layer.
@@ -21,7 +21,6 @@ class AiRepositoryImpl implements AiRepository {
 
   @override
   Future<Either<Failure, Message>> getCompletion(List<Message> messages) async {
-    // Mapear entidades de dominio a modelos de solicitud de la API
     final requestMessages = messages.map((msg) {
       return {"role": msg.type == MessageType.user ? "user" : "assistant", "content": msg.content};
     }).toList();
@@ -35,10 +34,9 @@ class AiRepositoryImpl implements AiRepository {
 
     try {
       final remoteResponse = await remoteDatasource.generateResponse(requestModel);
-      // Mapear el modelo de respuesta de la API a la entidad de dominio Message
       final aiMessageContent = remoteResponse.choices.first.message.content;
       final aiMessage = Message(
-        id: uuid.v4(), // Usa uuid para generar un ID
+        id: uuid.v4(),
         content: aiMessageContent,
         type: MessageType.assistant,
         timestamp: DateTime.now(),
@@ -46,7 +44,6 @@ class AiRepositoryImpl implements AiRepository {
       return Right(aiMessage);
     } on DioException catch (e) {
       if (e.type == DioExceptionType.badResponse) {
-        // Podrías intentar parsear el mensaje de error del servidor si existe
         return Left(ServerFailure(e.response?.data['error'] ?? AppConstants.serverError));
       } else if (e.type == DioExceptionType.connectionError || e.type == DioExceptionType.connectionTimeout) {
         return Left(NetworkFailure(AppConstants.networkError));

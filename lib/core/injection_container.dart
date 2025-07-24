@@ -5,14 +5,14 @@ import 'package:app_ia/domain/repository/chat_repository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart'; // Asegúrate de que esta dependencia esté en tu pubspec.yaml
+import 'package:uuid/uuid.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; 
 
 // ----------------------------------------------------
 // ! Data Sources
 // ----------------------------------------------------
 import 'package:app_ia/data/datasources/ai_remote_datasource.dart';
 import 'package:app_ia/data/datasources/chat_local_datasource.dart';
-
 
 // ----------------------------------------------------
 // ! Use Cases
@@ -21,9 +21,6 @@ import 'package:app_ia/domain/usecases/send_message_usecase.dart';
 import 'package:app_ia/domain/usecases/get_chats_usecase.dart';
 import 'package:app_ia/domain/usecases/create_new_chat_usecase.dart';
 import 'package:app_ia/domain/usecases/delete_chat_usecase.dart';
-// Si tuvieras un GetAiChatResponseUseCase independiente, iría aquí:
-// import 'package:app_ia/domain/usecases/get_ai_chat_response_usecase.dart';
-
 
 // ----------------------------------------------------
 // ! Presentation (Blocs/Cubits)
@@ -48,30 +45,11 @@ Future<void> init() async {
   sl.registerLazySingleton<AiRemoteDatasource>(
     () => AiRemoteDatasourceImpl(
       dio: sl(),
-
-      
-
-
-
-
-
-
-
-
-      apiKey: 'TU_API_KEY_DE_OPENROUTER', // ¡IMPORTANTE! Reemplaza con tu clave API real
-
-
-
-
-
-
-
-
-
-
-
-
-
+      // ¡Aquí está la CORRECCIÓN! Accede a la clave usando dotenv.env
+      // El '!' al final indica que estamos seguros de que la clave existirá.
+      // Asegúrate de que tu archivo .env se llame .env y esté en la raíz del proyecto.
+      // También confirma el nombre de la variable: 'OPENROUTER_API_KEY'
+      apiKey: dotenv.env['OPENROUTER_API_KEY']!,
     ),
   );
   sl.registerLazySingleton<ChatLocalDatasource>(
@@ -115,15 +93,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => DeleteChatUseCase(
         chatRepository: sl(), // Inyecta ChatRepository
       ));
-  // Si tuvieras un GetAiChatResponseUseCase independiente y fuera usado directamente:
-  // sl.registerLazySingleton(() => GetAiChatResponseUseCase(aiRepository: sl()));
-
 
   // ----------------------------------------------------
   // ! Presentation (Blocs/Cubits) - Inyecta los Casos de Uso
   // ----------------------------------------------------
-  // Usamos registerFactory para Blocs/Cubits, porque cada vez que se necesite
-  // una instancia (ej. en un BlocProvider), GetIt creará una nueva.
   sl.registerFactory(() => ChatBloc(
         sendMessageUseCase: sl(), // Inyecta SendMessageUseCase
         getChatsUseCase: sl(), // Inyecta GetChatsUseCase
