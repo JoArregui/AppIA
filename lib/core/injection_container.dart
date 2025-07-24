@@ -48,7 +48,30 @@ Future<void> init() async {
   sl.registerLazySingleton<AiRemoteDatasource>(
     () => AiRemoteDatasourceImpl(
       dio: sl(),
+
+      
+
+
+
+
+
+
+
+
       apiKey: 'TU_API_KEY_DE_OPENROUTER', // ¡IMPORTANTE! Reemplaza con tu clave API real
+
+
+
+
+
+
+
+
+
+
+
+
+
     ),
   );
   sl.registerLazySingleton<ChatLocalDatasource>(

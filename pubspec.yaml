@@ -17,14 +17,19 @@ dependencies:
   flutter_bloc: ^9.1.1
   dartz: ^0.10.1
   uuid: ^4.5.1
+  lottie: ^3.3.1
+  audio_streamer: ^4.2.2
+  record: ^6.0.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   build_runner: ^2.6.0
   json_serializable: ^6.10.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/futuristic_face.png
